@@ -5,7 +5,23 @@ import InputField from "../sections/Input/Index";
 import styles from "./styles";
 import SelectField from "../sections/SelectField";
 import TextArea from "../sections/TextAreaAutoSize";
+import {
+  ageError,
+  emailError,
+  genderError,
+  nameError,
+  phoneNoError,
+} from "../../constants/formErrorMessage";
 const RegisterationForm = () => {
+  const [localSavedData, setLocalSavedData] = useState({
+    fName: "",
+    lName: "",
+    mName: "",
+    age: 0,
+    email: "",
+    gender: "",
+    pNo: 0,
+  });
   const [storeFormData, setStoreFormData] = useState({
     fName: "",
     lName: "",
@@ -16,33 +32,41 @@ const RegisterationForm = () => {
     pNo: 0,
   });
 
-  const { control, register, handleSubmit, watch } = useForm({
+  const { control, handleSubmit, watch } = useForm({
     mode: "onChange",
   });
 
+  const watchItems = watch();
+  const storeData = () => {
+    if (Object.keys(watchItems).length !== 0) {
+      // setLocalSavedData(watchItems);
+      const formData: string = JSON.stringify(watchItems);
+      console.log("watchItems", formData);
+      if (formData !== "" && formData !== null) {
+        localStorage.setItem("formData", formData);
+        console.log("local set");
+        // setLocalSavedData(formData);
+      }
+    }
+  };
 
   const onSubmitForm = (formData: any) => {
     console.log(formData);
     localStorage.clear();
   };
-  const watchItems = watch();
-  const storeData = () => {
-    const formData = JSON.stringify(watchItems);
-    if (Object.keys(watchItems).length !== 0) {
-      localStorage.setItem("formData", formData);
-    }
-  };
 
   useEffect(() => {
-
     storeData();
   }, [watchItems]);
 
-  const componentDidMount = () => {
-    let savedFormData : object = {};
-    if (localStorage.getItem("formData") !== null)
-      savedFormData = JSON.parse(localStorage.getItem("formData")) 
-  }
+  useEffect(() => {
+    const formData = JSON.parse(localStorage.getItem("formData"));
+    if (formData !== null) {
+      setLocalSavedData(formData);
+    }
+  }, []);
+  console.log(watchItems);
+  console.log(localSavedData);
 
   return (
     <Box sx={styles.wrapper}>
@@ -58,19 +82,19 @@ const RegisterationForm = () => {
               name="fName"
               label="Name"
               type="text"
-              defaultValue={}
+              localValue={localSavedData.fName}
               rules={{
                 required: {
                   value: true,
-                  message: "This field is required.",
+                  message: nameError.required,
                 },
                 minLength: {
                   value: 3,
-                  message: "Atleast 3 character required",
+                  message: nameError.minLength,
                 },
                 maxLength: {
                   value: 20,
-                  message: "Maximum 20 character is allowed.",
+                  message: nameError.maxLength,
                 },
               }}
             />
@@ -80,14 +104,15 @@ const RegisterationForm = () => {
               name="mName"
               label="Middle Name"
               type="text"
+              localValue={localSavedData.mName}
               rules={{
                 minLength: {
                   value: 3,
-                  message: "Atleast 3 character required",
+                  message: nameError.minLength,
                 },
                 maxLength: {
                   value: 20,
-                  message: "Maximum 20 character is allowed.",
+                  message: nameError.maxLength,
                 },
               }}
             />
@@ -97,18 +122,19 @@ const RegisterationForm = () => {
               name="lName"
               label="Last Name"
               type="text"
+              localValue={localSavedData.lName}
               rules={{
                 required: {
                   value: true,
-                  message: "This field is required.",
+                  message: nameError.required,
                 },
                 minLength: {
                   value: 3,
-                  message: "Atleast 3 character required",
+                  message: nameError.minLength,
                 },
                 maxLength: {
                   value: 20,
-                  message: "Maximum 20 character is allowed.",
+                  message: nameError.maxLength,
                 },
               }}
             />
@@ -117,65 +143,67 @@ const RegisterationForm = () => {
               <InputField
                 customStyle={{ ...styles.inputEmail }}
                 control={control}
+                localValue={localSavedData.email}
                 name="email"
                 label="Email"
                 type="email"
                 rules={{
                   required: {
                     value: true,
-                    message: "This field is required.",
+                    message: emailError.required,
                   },
                   pattern: {
-                    value:
-                      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                    message: "Please enter valid email address.",
+                    value: emailError.pattern,
+                    message: emailError.message,
                   },
                 }}
               />
             </Box>
             <Box>
-              <InputField
+              {/*  <InputField
                 customStyle={styles.inputField}
                 control={control}
                 name="age"
                 label="Age"
                 type="number"
+                // defaultValue={localSavedData.age ? localSavedData.age : ""}
                 rules={{
                   required: {
-                    value: "true",
-                    message: "This field is required.",
+                    value: true,
+                    message: ageError.required,
                   },
                   min: {
                     value: 18,
-                    message: "You are not eligible",
+                    message: ageError.min,
                   },
                   max: {
                     value: 150,
-                    message: "Yoy are not eligible",
+                    message: ageError.max,
                   },
                 }}
-              />
-              <InputField
+              /> */}
+              {/* <InputField
                 customStyle={styles.inputField}
                 control={control}
                 name="pNo"
                 label="Phone Number"
                 type="number"
+                // defaultValue={!!localSavedData.pNo ? localSavedData.pNo : ""}
                 rules={{
                   required: {
                     value: true,
-                    message: "This field is required.",
+                    message: phoneNoError.required,
                   },
                   min: {
                     value: 1000000000,
-                    message: "Please enter 10 digit valid phone number",
+                    message: phoneNoError.min,
                   },
                   max: {
                     value: 9999999999,
-                    message: "Please enter 10 digit valid phone number.",
+                    message: phoneNoError.max,
                   },
                 }}
-              />
+              /> */}
             </Box>
             <Box sx={styles.inputField}>
               <SelectField
@@ -185,22 +213,26 @@ const RegisterationForm = () => {
                 label="Gender"
                 menuOptions={[
                   {
-                    value: "male",
+                    value: "Select",
+                    label: "Select",
+                  },
+                  {
+                    value: "Male",
                     label: "Male",
                   },
                   {
-                    value: "female",
+                    value: "Female",
                     label: "Female",
                   },
                   {
-                    value: "other",
+                    value: "Other",
                     label: "Other",
                   },
                 ]}
                 rules={{
                   required: {
                     value: true,
-                    message: "This field is required.",
+                    message: genderError.required,
                   },
                 }}
               />
@@ -241,14 +273,14 @@ const RegisterationForm = () => {
           </Box>
         </form>
       </Box>
-      {/* <Box>
-          {JSON.stringify(FormData)}
-        </Box> */}
+
+      <Box>
+        {Object.keys(localSavedData).length !== 0 && (
+          <Box>{JSON.stringify(localSavedData)}</Box>
+        )}
+      </Box>
     </Box>
   );
 };
 
 export default RegisterationForm;
-function componentWillUnmount(arg0: () => void) {
-  throw new Error("Function not implemented.");
-}

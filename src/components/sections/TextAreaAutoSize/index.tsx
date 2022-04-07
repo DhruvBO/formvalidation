@@ -29,9 +29,8 @@ const TextArea = ({
       name={name}
       rules={rules}
       render={({
-        field: { onChange, onBlur, value, name, ref },
-        fieldState: { invalid, isTouched, isDirty, error },
-        formState,
+        field: { onChange, onBlur, ref },
+        fieldState: { error }
       }) => (
         <TextField
           sx={{ ...customStyle }}
@@ -39,8 +38,8 @@ const TextArea = ({
           type={type}
           label={label}
           minRows={multiline ? minRows : 1}
-          onBlur={onBlur} // notify when input is touched
-          onChange={onChange} // send value to hook form
+          onBlur={onBlur} 
+          onChange={onChange}
           inputRef={ref}
           error={!!error}
           helperText={error?.message}
