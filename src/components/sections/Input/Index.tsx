@@ -1,5 +1,4 @@
 import { SxProps, TextField } from "@mui/material";
-import { AnyAaaaRecord } from "dns";
 import React, { useState } from "react";
 import { Controller } from "react-hook-form";
 type typePropes = {
@@ -9,7 +8,6 @@ type typePropes = {
   label: string;
   type: string;
   customStyle: SxProps;
-  localValue: string | number,
 };
 
 const InputField = ({
@@ -19,10 +17,8 @@ const InputField = ({
   label,
   type,
   customStyle,
-  localValue,
-}: 
+}:
 typePropes) => {
-  // const [defaultVal, setDefaultVal] = useState(savedValue);
   return (
     <Controller
       control={control}
@@ -30,22 +26,20 @@ typePropes) => {
       rules={rules}
       render={({
         field: { onChange, onBlur, value, ref },
-        fieldState: { error },
+        fieldState: { error }, 
       }) => {
-        /* const handleOnChange = (e: any) => {
-          setDefaultVal(e.target.value);
-        }; */
         return (
           <TextField
             sx={{ ...customStyle }}
             type={type}
-            value={localValue}
             label={label}
+            value={value}
             onBlur={onBlur}
             onChange={onChange}
             inputRef={ref}
             error={!!error}
             helperText={error?.message}
+            InputLabelProps={{ shrink: value ? true : false }}  
           />
         );
       }}

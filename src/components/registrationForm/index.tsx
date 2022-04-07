@@ -13,46 +13,22 @@ import {
   phoneNoError,
 } from "../../constants/formErrorMessage";
 const RegisterationForm = () => {
-  const [localSavedData, setLocalSavedData] = useState({
-    fName: "",
-    lName: "",
-    mName: "",
-    age: 0,
-    email: "",
-    gender: "",
-    pNo: 0,
-  });
-  const [storeFormData, setStoreFormData] = useState({
-    fName: "",
-    lName: "",
-    mName: "",
-    age: 0,
-    email: "",
-    gender: "",
-    pNo: 0,
-  });
+  const [clearForm, setClearForm] = useState(false);
 
-  const { control, handleSubmit, watch } = useForm({
+  const { control, handleSubmit, watch, setValue, reset } = useForm({
     mode: "onChange",
   });
 
   const watchItems = watch();
   const storeData = () => {
     if (Object.keys(watchItems).length !== 0) {
-      // setLocalSavedData(watchItems);
       const formData: string = JSON.stringify(watchItems);
       console.log("watchItems", formData);
       if (formData !== "" && formData !== null) {
         localStorage.setItem("formData", formData);
         console.log("local set");
-        // setLocalSavedData(formData);
       }
     }
-  };
-
-  const onSubmitForm = (formData: any) => {
-    console.log(formData);
-    localStorage.clear();
   };
 
   useEffect(() => {
@@ -62,11 +38,37 @@ const RegisterationForm = () => {
   useEffect(() => {
     const formData = JSON.parse(localStorage.getItem("formData"));
     if (formData !== null) {
-      setLocalSavedData(formData);
+      setValue("fName", formData?.fName, {
+        shouldValidate: true,
+        shouldTouch: true,
+        shouldDirty: true,
+      });
+      setValue("mName", formData?.lName, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      setValue("lName", formData?.mName, { shouldValidate: true });
+      setValue("email", formData?.email, { shouldValidate: true });
+      setValue("age", formData?.age, { shouldValidate: true });
+      setValue("pNo", formData?.pNo, { shouldValidate: true });
+      setValue("select", formData?.select, { shouldValidate: true });
+      setValue("address", formData?.address, { shouldValidate: true });
     }
   }, []);
   console.log(watchItems);
-  console.log(localSavedData);
+
+  const onSubmitForm = (formData: any) => {
+    reset();
+    console.log("submit", formData);
+    localStorage.removeItem("formData");
+    window.location.reload();
+  };
+
+  const resetForm = () => {
+    reset();
+    console.log("reset");
+    localStorage.removeItem("formData");
+  };
 
   return (
     <Box sx={styles.wrapper}>
@@ -82,7 +84,6 @@ const RegisterationForm = () => {
               name="fName"
               label="Name"
               type="text"
-              localValue={localSavedData.fName}
               rules={{
                 required: {
                   value: true,
@@ -104,7 +105,6 @@ const RegisterationForm = () => {
               name="mName"
               label="Middle Name"
               type="text"
-              localValue={localSavedData.mName}
               rules={{
                 minLength: {
                   value: 3,
@@ -122,7 +122,6 @@ const RegisterationForm = () => {
               name="lName"
               label="Last Name"
               type="text"
-              localValue={localSavedData.lName}
               rules={{
                 required: {
                   value: true,
@@ -143,7 +142,6 @@ const RegisterationForm = () => {
               <InputField
                 customStyle={{ ...styles.inputEmail }}
                 control={control}
-                localValue={localSavedData.email}
                 name="email"
                 label="Email"
                 type="email"
@@ -160,13 +158,12 @@ const RegisterationForm = () => {
               />
             </Box>
             <Box>
-              {/*  <InputField
+              <InputField
                 customStyle={styles.inputField}
                 control={control}
                 name="age"
                 label="Age"
                 type="number"
-                // defaultValue={localSavedData.age ? localSavedData.age : ""}
                 rules={{
                   required: {
                     value: true,
@@ -181,14 +178,13 @@ const RegisterationForm = () => {
                     message: ageError.max,
                   },
                 }}
-              /> */}
-              {/* <InputField
+              />
+              <InputField
                 customStyle={styles.inputField}
                 control={control}
                 name="pNo"
                 label="Phone Number"
                 type="number"
-                // defaultValue={!!localSavedData.pNo ? localSavedData.pNo : ""}
                 rules={{
                   required: {
                     value: true,
@@ -203,7 +199,7 @@ const RegisterationForm = () => {
                     message: phoneNoError.max,
                   },
                 }}
-              /> */}
+              />
             </Box>
             <Box sx={styles.inputField}>
               <SelectField
@@ -262,22 +258,21 @@ const RegisterationForm = () => {
                 }}
               />
             </Box>
-            <Box>
+            <Box sx={styles.inputField}>
               <Button sx={styles.inputField} type="submit" variant="contained">
                 Submit
               </Button>
-              <Button type="reset" variant="outlined">
+              <Button
+                sx={styles.inputField}
+                onClick={() => resetForm()}
+                variant="outlined"
+                type="reset"
+              >
                 Reset
               </Button>
             </Box>
           </Box>
         </form>
-      </Box>
-
-      <Box>
-        {Object.keys(localSavedData).length !== 0 && (
-          <Box>{JSON.stringify(localSavedData)}</Box>
-        )}
       </Box>
     </Box>
   );
