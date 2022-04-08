@@ -26,16 +26,16 @@ const SelectField = ({
       name={name}
       rules={rules}
       render={({
-        field: { onChange, onBlur, ref },
+        field: { onChange, onBlur, value, ref },
         fieldState: { error }
       }) => (
         <TextField
           sx={{ ...customStyle }}
           select
           label={label}
-          defaultValue="Select"
-          onBlur={onBlur} // notify when input is touched
-          onChange={onChange} // send value to hook form
+          value={value}
+          onBlur={onBlur} 
+          onChange={onChange} 
           inputRef={ref}
           error={!!error}
           helperText={error?.message}
