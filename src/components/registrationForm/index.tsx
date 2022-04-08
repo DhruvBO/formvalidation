@@ -1,5 +1,5 @@
 import { Box, Button } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import InputField from "../sections/Input/Index";
 import styles from "./styles";
@@ -13,7 +13,6 @@ import {
   phoneNoError,
 } from "../../constants/formErrorMessage";
 const RegisterationForm = () => {
-  const [clearForm, setClearForm] = useState(false);
 
   const { control, handleSubmit, watch, setValue, reset } = useForm({
     mode: "onChange",
@@ -23,14 +22,13 @@ const RegisterationForm = () => {
   const storeData = () => {
     if (Object.keys(watchItems).length !== 0) {
       const formData: string = JSON.stringify(watchItems);
-      console.log("watchItems", formData);
       if (formData !== "" && formData !== null) {
         localStorage.setItem("formData", formData);
-        console.log("local set");
       }
     }
   };
 
+  
   useEffect(() => {
     storeData();
   }, [watchItems]);
@@ -53,21 +51,20 @@ const RegisterationForm = () => {
       setValue("pNo", formData?.pNo, { shouldValidate: true });
       setValue("select", formData?.select, { shouldValidate: true });
       setValue("address", formData?.address, { shouldValidate: true });
+      setValue("gender", formData?.gender, { shouldValidate: true });
     }
   }, []);
-  console.log(watchItems);
 
   const onSubmitForm = (formData: any) => {
     reset();
-    console.log("submit", formData);
     localStorage.removeItem("formData");
     window.location.reload();
   };
 
   const resetForm = () => {
     reset();
-    console.log("reset");
     localStorage.removeItem("formData");
+    // window.location.reload();
   };
 
   return (

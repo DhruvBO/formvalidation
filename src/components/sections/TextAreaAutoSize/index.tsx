@@ -29,7 +29,7 @@ const TextArea = ({
       name={name}
       rules={rules}
       render={({
-        field: { onChange, onBlur, ref },
+        field: { onChange, onBlur, value, ref },
         fieldState: { error }
       }) => (
         <TextField
@@ -37,10 +37,12 @@ const TextArea = ({
           multiline={multiline}
           type={type}
           label={label}
-          minRows={multiline ? minRows : 1}
+          value={value}
+          minRows={minRows}
           onBlur={onBlur} 
           onChange={onChange}
           inputRef={ref}
+          InputLabelProps={{ shrink: value ? true : false }}  
           error={!!error}
           helperText={error?.message}
         />
