@@ -5,44 +5,70 @@ import InputField from "../sections/Input/Index";
 import styles from "./styles";
 import SelectField from "../sections/SelectField";
 import TextArea from "../sections/TextAreaAutoSize";
+import {
+  ageError,
+  emailError,
+  genderError,
+  nameError,
+  phoneNoError,
+} from "../../constants/formErrorMessage";
 const RegisterationForm = () => {
-  const [storeFormData, setStoreFormData] = useState({
-    fName: "",
-    lName: "",
-    mName: "",
-    age: 0,
-    email: "",
-    gender: "",
-    pNo: 0,
-  });
+  const [clearForm, setClearForm] = useState(false);
 
-  const { control, register, handleSubmit, watch } = useForm({
+  const { control, handleSubmit, watch, setValue, reset } = useForm({
     mode: "onChange",
   });
 
-
-  const onSubmitForm = (formData: any) => {
-    console.log(formData);
-    localStorage.clear();
-  };
   const watchItems = watch();
   const storeData = () => {
-    const formData = JSON.stringify(watchItems);
     if (Object.keys(watchItems).length !== 0) {
-      localStorage.setItem("formData", formData);
+      const formData: string = JSON.stringify(watchItems);
+      console.log("watchItems", formData);
+      if (formData !== "" && formData !== null) {
+        localStorage.setItem("formData", formData);
+        console.log("local set");
+      }
     }
   };
 
   useEffect(() => {
-
     storeData();
   }, [watchItems]);
 
-  const componentDidMount = () => {
-    let savedFormData : object = {};
-    if (localStorage.getItem("formData") !== null)
-      savedFormData = JSON.parse(localStorage.getItem("formData")) 
-  }
+  useEffect(() => {
+    const formData = JSON.parse(localStorage.getItem("formData"));
+    if (formData !== null) {
+      setValue("fName", formData?.fName, {
+        shouldValidate: true,
+        shouldTouch: true,
+        shouldDirty: true,
+      });
+      setValue("mName", formData?.lName, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      setValue("lName", formData?.mName, { shouldValidate: true });
+      setValue("email", formData?.email, { shouldValidate: true });
+      setValue("age", formData?.age, { shouldValidate: true });
+      setValue("pNo", formData?.pNo, { shouldValidate: true });
+      setValue("select", formData?.select, { shouldValidate: true });
+      setValue("address", formData?.address, { shouldValidate: true });
+    }
+  }, []);
+  console.log(watchItems);
+
+  const onSubmitForm = (formData: any) => {
+    reset();
+    console.log("submit", formData);
+    localStorage.removeItem("formData");
+    window.location.reload();
+  };
+
+  const resetForm = () => {
+    reset();
+    console.log("reset");
+    localStorage.removeItem("formData");
+  };
 
   return (
     <Box sx={styles.wrapper}>
@@ -58,19 +84,18 @@ const RegisterationForm = () => {
               name="fName"
               label="Name"
               type="text"
-              defaultValue={}
               rules={{
                 required: {
                   value: true,
-                  message: "This field is required.",
+                  message: nameError.required,
                 },
                 minLength: {
                   value: 3,
-                  message: "Atleast 3 character required",
+                  message: nameError.minLength,
                 },
                 maxLength: {
                   value: 20,
-                  message: "Maximum 20 character is allowed.",
+                  message: nameError.maxLength,
                 },
               }}
             />
@@ -83,11 +108,11 @@ const RegisterationForm = () => {
               rules={{
                 minLength: {
                   value: 3,
-                  message: "Atleast 3 character required",
+                  message: nameError.minLength,
                 },
                 maxLength: {
                   value: 20,
-                  message: "Maximum 20 character is allowed.",
+                  message: nameError.maxLength,
                 },
               }}
             />
@@ -100,15 +125,15 @@ const RegisterationForm = () => {
               rules={{
                 required: {
                   value: true,
-                  message: "This field is required.",
+                  message: nameError.required,
                 },
                 minLength: {
                   value: 3,
-                  message: "Atleast 3 character required",
+                  message: nameError.minLength,
                 },
                 maxLength: {
                   value: 20,
-                  message: "Maximum 20 character is allowed.",
+                  message: nameError.maxLength,
                 },
               }}
             />
@@ -123,12 +148,11 @@ const RegisterationForm = () => {
                 rules={{
                   required: {
                     value: true,
-                    message: "This field is required.",
+                    message: emailError.required,
                   },
                   pattern: {
-                    value:
-                      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                    message: "Please enter valid email address.",
+                    value: emailError.pattern,
+                    message: emailError.message,
                   },
                 }}
               />
@@ -142,16 +166,16 @@ const RegisterationForm = () => {
                 type="number"
                 rules={{
                   required: {
-                    value: "true",
-                    message: "This field is required.",
+                    value: true,
+                    message: ageError.required,
                   },
                   min: {
                     value: 18,
-                    message: "You are not eligible",
+                    message: ageError.min,
                   },
                   max: {
                     value: 150,
-                    message: "Yoy are not eligible",
+                    message: ageError.max,
                   },
                 }}
               />
@@ -164,15 +188,15 @@ const RegisterationForm = () => {
                 rules={{
                   required: {
                     value: true,
-                    message: "This field is required.",
+                    message: phoneNoError.required,
                   },
                   min: {
                     value: 1000000000,
-                    message: "Please enter 10 digit valid phone number",
+                    message: phoneNoError.min,
                   },
                   max: {
                     value: 9999999999,
-                    message: "Please enter 10 digit valid phone number.",
+                    message: phoneNoError.max,
                   },
                 }}
               />
@@ -185,22 +209,26 @@ const RegisterationForm = () => {
                 label="Gender"
                 menuOptions={[
                   {
-                    value: "male",
+                    value: "Select",
+                    label: "Select",
+                  },
+                  {
+                    value: "Male",
                     label: "Male",
                   },
                   {
-                    value: "female",
+                    value: "Female",
                     label: "Female",
                   },
                   {
-                    value: "other",
+                    value: "Other",
                     label: "Other",
                   },
                 ]}
                 rules={{
                   required: {
                     value: true,
-                    message: "This field is required.",
+                    message: genderError.required,
                   },
                 }}
               />
@@ -230,25 +258,24 @@ const RegisterationForm = () => {
                 }}
               />
             </Box>
-            <Box>
+            <Box sx={styles.inputField}>
               <Button sx={styles.inputField} type="submit" variant="contained">
                 Submit
               </Button>
-              <Button type="reset" variant="outlined">
+              <Button
+                sx={styles.inputField}
+                onClick={() => resetForm()}
+                variant="outlined"
+                type="reset"
+              >
                 Reset
               </Button>
             </Box>
           </Box>
         </form>
       </Box>
-      {/* <Box>
-          {JSON.stringify(FormData)}
-        </Box> */}
     </Box>
   );
 };
 
 export default RegisterationForm;
-function componentWillUnmount(arg0: () => void) {
-  throw new Error("Function not implemented.");
-}

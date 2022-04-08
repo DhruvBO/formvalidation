@@ -19,19 +19,18 @@ const SelectField = ({
   menuOptions,
   customStyle,
 }: typePropes) => {
-  console.log(menuOptions);
+  // console.log(menuOptions);
   return (
     <Controller
       control={control}
       name={name}
       rules={rules}
       render={({
-        field: { onChange, onBlur, value, name, ref },
-        fieldState: { invalid, isTouched, isDirty, error },
-        formState,
+        field: { onChange, onBlur, ref },
+        fieldState: { error }
       }) => (
         <TextField
-          sx={{...customStyle}}
+          sx={{ ...customStyle }}
           select
           label={label}
           defaultValue="Select"
@@ -41,10 +40,10 @@ const SelectField = ({
           error={!!error}
           helperText={error?.message}
         >
-          {menuOptions.map((option: any) => {
+          {menuOptions.map((option: any, index: any) => {
             return (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
+              <MenuItem key={option["value"]} value={option["value"]}>
+                {option["label"]}
               </MenuItem>
             );
           })}
